@@ -51,7 +51,7 @@ ASEPRITE_DIR="$HOME/.local/lib/aseprite"
 cd "~/.local/lib/"
 git clone --recursive https://github.com/aseprite/aseprite.git
 cd aseprite
-curl "https://github.com/aseprite/skia/releases/download/latest/Skia-Linux-Release-x64-libc%2B%2B.zip" | unzip -q
+curl "https://github.com/aseprite/skia/releases/download/latest/Skia-Linux-Release-x64-libc++.zip" | unzip -q
 mkdir build
 cd build
 export CC=clang
