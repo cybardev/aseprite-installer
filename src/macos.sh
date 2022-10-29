@@ -58,23 +58,23 @@ get_platform() {
 cmake_platform() {
     case $1 in
     arm64)
-        P="arm64"
+        ARCH="arm64"
         EXTRA="-DPNG_ARM_NEON:STRING=on"
         ;;
     x64)
-        P="x86_64"
+        ARCH="x86_64"
         EXTRA=""
         ;;
     esac
     cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DCMAKE_OSX_ARCHITECTURES=$P \
+        -DCMAKE_OSX_ARCHITECTURES=$ARCH \
         -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
         -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
         -DLAF_BACKEND=skia \
         -DSKIA_DIR=$HOME/deps/skia \
         -DSKIA_LIBRARY_DIR=$HOME/deps/skia/out/Release-$1 \
-        -DSKIA_LIBRARY=$HOME/deps/skia/out/Release-arm64/libskia.a \
+        -DSKIA_LIBRARY=$HOME/deps/skia/out/Release-$1/libskia.a \
         $EXTRA \
         -G Ninja \
         ..
