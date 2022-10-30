@@ -9,27 +9,6 @@ install_deps() {
     brew install clang cmake ninja unzip
 }
 
-install_aseprite() {
-    # aseprite installation directory
-    ASEPRITE_DIR="$HOME/.local/lib/aseprite"
-
-    # compilation process
-    PLATFORM=$(get_platform)
-    cd "~/.local/lib/"
-    git clone --recursive https://github.com/aseprite/aseprite.git
-    cd aseprite
-    curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-macOS-Release-$PLATFORM.zip"}')
-    unzip -q "Skia-macOS-Release-$PLATFORM.zip" -d "skia"
-    rm "Skia-macOS-Release-$PLATFORM.zip"
-    mkdir build
-    cd build
-    cmake_platform $PLATFORM
-    ninja aseprite
-
-    echo "Compilation Done."
-    echo "Please add '$ASEPRITE_DIR/build/bin/' to PATH"
-}
-
 get_platform() {
     echo "Which CPU do you have?"
     echo
@@ -74,6 +53,27 @@ cmake_platform() {
         $EXTRA \
         -G Ninja \
         ..
+}
+
+install_aseprite() {
+    # aseprite installation directory
+    ASEPRITE_DIR="$HOME/.local/lib/aseprite"
+
+    # compilation process
+    PLATFORM=$(get_platform)
+    cd "~/.local/lib/"
+    git clone --recursive https://github.com/aseprite/aseprite.git
+    cd aseprite
+    curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-macOS-Release-$PLATFORM.zip"}')
+    unzip -q "Skia-macOS-Release-$PLATFORM.zip" -d "skia"
+    rm "Skia-macOS-Release-$PLATFORM.zip"
+    mkdir build
+    cd build
+    cmake_platform $PLATFORM
+    ninja aseprite
+
+    echo "Compilation Done."
+    echo "Please add '$ASEPRITE_DIR/build/bin/' to PATH"
 }
 
 # --- main block --- #
