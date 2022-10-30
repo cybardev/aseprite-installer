@@ -1,9 +1,5 @@
 #!/usr/bin/env sh
 
-install_deps
-install_aseprite
-exit 0
-
 # --- script code --- #
 
 install_deps() {
@@ -73,3 +69,8 @@ install_aseprite() {
     echo "Compilation Done."
     echo "Please add '$ASEPRITE_DIR/build/bin/' to PATH"
 }
+
+# --- main block --- #
+
+install_deps
+install_aseprite

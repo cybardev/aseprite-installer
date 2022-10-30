@@ -1,9 +1,5 @@
 #!/usr/bin/env sh
 
-install_deps
-install_aseprite
-exit 0
-
 # --- script code --- #
 
 install_deps() {
@@ -79,3 +75,8 @@ cmake_platform() {
         -G Ninja \
         ..
 }
+
+# --- main block --- #
+
+install_deps
+install_aseprite
