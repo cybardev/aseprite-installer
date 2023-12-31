@@ -35,6 +35,7 @@ install_deps() {
     *) # unsupported package manager
         echo "Sorry, we cannot install dependencies using your package manager yet."
         echo "Please install the dependencies and select the appropriate option from the previous menu."
+        exit 1
         ;;
     esac
 }
