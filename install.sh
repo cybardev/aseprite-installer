@@ -1,77 +1,58 @@
 #!/usr/bin/env sh
 
-# --- script code --- #
+# set installation directories
+LIB="$HOME/.local/lib"
+ASEPRITE_DIR="$LIB/aseprite"
+SKIA_DIR="$ASEPRITE_DIR/skia"
 
-install_deps() {
-    echo "Installing dependencies for compilation..."
-    echo "Which package manager do you have?"
+# fail if installation directory is occupied
+if [ -d "$ASEPRITE_DIR" ]; then
+    echo -e "\e[1;31m[ERROR]\e[0m \"$ASEPRITE_DIR\" is not empty."
+    echo -e "\e[1;33mPlease ensure there is no directory named \"aseprite\" in \"$LIB\" and try again.\e[0m"
     echo
-    echo "0) skip (dependencies already installed)"
-    echo "1) apt"
-    echo "2) dnf"
-    echo "3) pacman"
-    echo "4) none of the above"
-    echo
-    echo "q) exit script"
-    echo
-    read -n 1 -p "Enter a number: "
+    echo -e "\e[1;36m[HINT]\e[0m Run this to move the directory to a backup directory at the same location:"
+    echo -e "\e[1;36m       mv $ASEPRITE_DIR $ASEPRITE_DIR.bak\e[0m"
+    exit 1
+fi
 
-    case $REPLY in
-    q | Q) # exit the script
-        exit 0
-        ;;
-    0) # dependencies installed
-        continue
-        ;;
-    1) # debian
-        sudo apt-get install -y g++ clang-10 libc++-10-dev libc++abi-10-dev cmake ninja-build libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev unzip
-        ;;
-    2) # fedora
-        sudo dnf install -y gcc-c++ clang libcxx-devel cmake ninja-build libX11-devel libXcursor-devel libXi-devel mesa-libGL-devel fontconfig-devel unzip
-        ;;
-    3) # arch
-        sudo pacman -S gcc clang libc++ cmake ninja libx11 libxcursor mesa-libgl fontconfig unzip
-        ;;
-    *) # unsupported package manager
-        echo "Sorry, we cannot install dependencies using your package manager yet."
-        echo "Please install the dependencies and select the appropriate option from the previous menu."
-        exit 1
-        ;;
-    esac
-}
+# install dependencies
+sudo apt-get install -y g++ clang-10 libc++-10-dev libc++abi-10-dev cmake ninja-build libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev unzip
 
-install_aseprite() {
-    # aseprite installation directory
-    ASEPRITE_DIR="$HOME/.local/lib/aseprite"
+# save current working directory
+CURRENT_DIR="$(pwd)"
 
-    # compilation process
-    cd "~/.local/lib/"
-    git clone --recursive https://github.com/aseprite/aseprite.git
-    cd aseprite
-    curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-Linux-Release-x64-libc++.zip"}')
-    unzip -q "Skia-Linux-Release-x64-libc++.zip" -d "skia"
-    rm "Skia-Linux-Release-x64-libc++.zip"
-    mkdir build
-    cd build
-    export CC=clang
-    export CXX=clang++
-    cmake \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DCMAKE_CXX_FLAGS:STRING=-stdlib=libc++ \
-        -DCMAKE_EXE_LINKER_FLAGS:STRING=-stdlib=libc++ \
-        -DLAF_BACKEND=skia \
-        -DSKIA_DIR=$ASEPRITE_DIR/skia \
-        -DSKIA_LIBRARY_DIR=$ASEPRITE_DIR/skia/out/Release-x64 \
-        -DSKIA_LIBRARY=$ASEPRITE_DIR/skia/out/Release-x64/libskia.a \
-        -G Ninja \
-        ..
-    ninja aseprite
+# create and change to installation directory
+mkdir -p "$LIB"
+cd "$LIB"
 
-    echo "Compilation Done."
-    echo "Please add '$ASEPRITE_DIR/build/bin/' to PATH"
-}
+# clone aseprite recursively (include submodules)
+git clone --recursive https://github.com/aseprite/aseprite.git
+cd aseprite
 
-# --- main block --- #
+# download and unzip skia prebuilt for aseprite
+curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-Linux-Release-x64-libc++.zip"}')
+unzip -q "Skia-Linux-Release-x64-libc++.zip" -d "skia"
+rm "Skia-Linux-Release-x64-libc++.zip"
 
-install_deps
-install_aseprite
+# compilation process
+mkdir build
+cd build
+export CC=clang
+export CXX=clang++
+cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_CXX_FLAGS:STRING=-stdlib=libc++ \
+    -DCMAKE_EXE_LINKER_FLAGS:STRING=-stdlib=libc++ \
+    -DLAF_BACKEND=skia \
+    -DSKIA_DIR=$SKIA_DIR \
+    -DSKIA_LIBRARY_DIR=$SKIA_DIR/out/Release-x64 \
+    -DSKIA_LIBRARY=$SKIA_DIR/out/Release-x64/libskia.a \
+    -G Ninja \
+    ..
+ninja aseprite
+
+# build complete message and further instructions
+echo -e "\e[1;32m[DONE]\e[1;33m Please add \"$ASEPRITE_DIR/build/bin/\" to PATH\e[0m"
+
+# go back to saved working directory
+cd "$CURRENT_DIR"
