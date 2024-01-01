@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # set installation directories
 LIB="$HOME/.local/lib"
