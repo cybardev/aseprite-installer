@@ -6,8 +6,6 @@ Shell script to download and build Aseprite from source for Debian/Ubuntu and de
 
 Run the following commands to install Aseprite
 
-### Linux
-
 ```sh
 curl -sS "https://aseprite.cybar.dev/install.sh" | sh
 ```
