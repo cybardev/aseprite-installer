@@ -1,4 +1,4 @@
-# aseprite-installers
+# Aseprite Installer Script
 
 Shell script to download and build Aseprite from source for Debian/Ubuntu and derivative systems
 
