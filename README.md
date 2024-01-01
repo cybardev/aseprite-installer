@@ -1,6 +1,6 @@
 # aseprite-installers
 
-Collection of Aseprite installation scripts
+Shell script to download and build Aseprite from source for Debian/Ubuntu and derivative systems
 
 ## Installation
 
@@ -9,13 +9,7 @@ Run the following commands to install Aseprite
 ### Linux
 
 ```sh
-curl -sS "https://raw.githubusercontent.com/cybardev/aseprite-installers/main/src/linux.sh" | sh
-```
-
-### MacOS
-
-```sh
-curl -sS "https://raw.githubusercontent.com/cybardev/aseprite-installers/main/src/macos.sh" | sh
+curl -sS "https://aseprite.cybar.dev/install.sh" | sh
 ```
 
 ## Credits
