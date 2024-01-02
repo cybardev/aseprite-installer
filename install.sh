@@ -52,6 +52,7 @@ cmake \
 ninja aseprite
 
 # build complete message and further instructions
+echo
 echo -e "\e[1;32m[DONE]\e[1;33m Please add \"$ASEPRITE_DIR/build/bin/\" to PATH\e[0m"
 
 # go back to saved working directory
