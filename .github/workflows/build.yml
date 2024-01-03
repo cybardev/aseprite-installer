@@ -35,7 +35,7 @@ jobs:
         echo "download_url=${DOWNLOAD_URL}" >> "${GITHUB_OUTPUT}"
 
         delimiter="$(openssl rand -hex 8)"
-        echo "version_info<<${delimiter}
+        echo "version_info<<${delimiter}"
         echo "${VERSION_INFO}" >> "${GITHUB_OUTPUT}"
         echo "${delimiter}" >> "${GITHUB_OUTPUT}"
     - name: Load version from cache
