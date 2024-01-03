@@ -36,7 +36,7 @@ jobs:
 
         delimiter="$(openssl rand -hex 8)"
         echo "version_info<<${delimiter}"
-        echo "${VERSION_INFO}" >> "${GITHUB_OUTPUT}"
+        echo ${VERSION_INFO} >> "${GITHUB_OUTPUT}"
         echo "${delimiter}" >> "${GITHUB_OUTPUT}"
     - name: Load version from cache
       id: version_check
