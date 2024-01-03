@@ -61,7 +61,7 @@ jobs:
   build-linux:
     name: Build for Linux
     needs: check-version
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_LINUX }}
+    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_LINUX }} == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
@@ -108,7 +108,7 @@ jobs:
   build-macos:
     name: Build for MacOS
     needs: check-version
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_MACOS }}
+    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_MACOS }} == 'true'
     runs-on: macOS-latest
     steps:
       - name: Install dependencies
@@ -155,7 +155,7 @@ jobs:
   build-windows:
     name: Build for Windows
     needs: check-version
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_WINDOWS }}
+    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_WINDOWS }} == 'true'
     runs-on: windows-latest
     steps:
       - name: Install dependencies
