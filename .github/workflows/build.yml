@@ -13,14 +13,6 @@ env:
   CXX: clang++
 
 jobs:
-  target:
-    name: Set build targets
-    runs-on: ubuntu-latest
-    outputs:
-      linux: true
-      macos: false
-      windows: false
-
   check-version:
     name: Check latest Aseprite release
     runs-on: ubuntu-latest
@@ -68,8 +60,8 @@ jobs:
 
   build-linux:
     name: Build for Linux
-    needs: [target, check-version]
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ needs.target.outputs.linux }}
+    needs: check-version
+    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_LINUX }}
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
@@ -115,8 +107,8 @@ jobs:
 
   build-macos:
     name: Build for MacOS
-    needs: [target, check-version]
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ needs.target.outputs.macos }}
+    needs: check-version
+    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_MACOS }}
     runs-on: macOS-latest
     steps:
       - name: Install dependencies
@@ -162,8 +154,8 @@ jobs:
 
   build-windows:
     name: Build for Windows
-    needs: [target, check-version]
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ needs.target.outputs.windows }}
+    needs: check-version
+    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_WINDOWS }}
     runs-on: windows-latest
     steps:
       - name: Install dependencies
