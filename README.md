@@ -13,3 +13,4 @@ curl -sS "https://aseprite.cybar.dev/install.sh" | bash
 ## Credits
 
 -   [Aseprite](https://github.com/aseprite/aseprite/)
+-   [ellisonoswalt/aseprite_builder](https://github.com/ellisonoswalt/aseprite_builder)
