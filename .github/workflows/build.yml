@@ -61,7 +61,7 @@ jobs:
   build-linux:
     name: Build for Linux
     needs: check-version
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_LINUX }} == 'true'
+    if: ${{ needs.check-version.outputs.should_build }}
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
@@ -96,109 +96,6 @@ jobs:
         working-directory: aseprite/build/bin
         run: 7z -tzip a Aseprite-${{ needs.check-version.outputs.latest_tag }}-${{ runner.os }}.zip *
       - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.check-version.outputs.upload_url }}
-          asset_path: aseprite/build/bin/Aseprite-${{ needs.check-version.outputs.latest_tag }}-${{ runner.os }}.zip
-          asset_name: Aseprite-${{ needs.check-version.outputs.latest_tag }}-${{ runner.os }}.zip
-          asset_content_type: application/zip
-
-  build-macos:
-    name: Build for MacOS
-    needs: check-version
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_MACOS }} == 'true'
-    runs-on: macOS-latest
-    steps:
-      - name: Install dependencies
-        run: brew install ninja p7zip
-      - name: Get Skia from cache
-        id: skia-cache
-        uses: actions/cache@v2
-        with:
-          path: skia
-          key: skia-${{ runner.os }}-cache
-      - name: Download Skia if not in cache
-        if: steps.skia-cache.outputs.cache-hit != 'true'
-        run: |
-          curl -o Skia-${{ runner.os }}-Release-X64.zip -L https://github.com/aseprite/skia/releases/download/m81-b607b32047/Skia-${{ runner.os }}-Release-X64.zip
-          unzip Skia-${{ runner.os }}-Release-X64.zip -d skia
-      - name: Download Aseprite release
-        run: |
-          curl -o Aseprite-source.zip -L ${{ needs.check-version.outputs.download_url }}
-          unzip Aseprite-source.zip -d aseprite
-          mkdir -p aseprite/build
-      - name: Run CMake
-        working-directory: aseprite/build
-        run: cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -DLAF_BACKEND=skia -DSKIA_DIR=../../skia -DSKIA_LIBRARY_DIR=../../skia/out/Release-x64 -G Ninja ..
-      - name: Run Ninja
-        working-directory: aseprite/build
-        run: ninja aseprite
-      - name: Clean up build
-        working-directory: aseprite/build/bin
-        shell: bash
-        run: rm -f gen modp_b64_gen gen.exe gen.exe.manifest modp_b64_gen.exe modp_b64_gen.exe.manifest
-      - name: Create release
-        working-directory: aseprite/build/bin
-        run: 7z -tzip a Aseprite-${{ needs.check-version.outputs.latest_tag }}-${{ runner.os }}.zip *
-      - name: Upload release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.check-version.outputs.upload_url }}
-          asset_path: aseprite/build/bin/Aseprite-${{ needs.check-version.outputs.latest_tag }}-${{ runner.os }}.zip
-          asset_name: Aseprite-${{ needs.check-version.outputs.latest_tag }}-${{ runner.os }}.zip
-          asset_content_type: application/zip
-
-  build-windows:
-    name: Build for Windows
-    needs: check-version
-    if: ${{ needs.check-version.outputs.should_build }} && ${{ vars.BUILD_FOR_WINDOWS }} == 'true'
-    runs-on: windows-latest
-    steps:
-      - name: Install dependencies
-        uses: seanmiddleditch/gha-setup-ninja@v1
-      - name: Get Skia from cache
-        id: skia-cache
-        uses: actions/cache@v2
-        with:
-          path: skia
-          key: skia-${{ runner.os }}-cache
-      - name: Download Skia if not in cache
-        if: steps.skia-cache.outputs.cache-hit != 'true'
-        run: |
-          curl -o Skia-${{ runner.os }}-Release-X64.zip -L https://github.com/aseprite/skia/releases/download/m81-b607b32047/Skia-${{ runner.os }}-Release-X64.zip
-          unzip Skia-${{ runner.os }}-Release-X64.zip -d skia
-      - name: Download Aseprite release
-        run: |
-          curl -o Aseprite-source.zip -L ${{ needs.check-version.outputs.download_url }}
-          unzip Aseprite-source.zip -d aseprite
-          mkdir -p aseprite/build
-      - name: Set architecture for the produced binary
-        shell: cmd
-        run: call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-      - name: Setting Visual Studio build environment variables and paths
-        uses: seanmiddleditch/gha-setup-vsdevenv@v1
-      - name: Run CMake
-        working-directory: aseprite/build
-        shell: cmd
-        run: cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_IGNORE_PATH='C:/ProgramData/chocolatey/bin/;C:/Strawberry/c/bin/' -DLAF_BACKEND=skia -DSKIA_DIR=../../skia -DSKIA_LIBRARY_DIR=../../skia/out/Release-x64 -G Ninja ..
-      - name: Run Ninja
-        working-directory: aseprite/build
-        run: ninja aseprite
-      - name: Clean up build
-        working-directory: aseprite/build/bin
-        shell: bash
-        run: rm -f gen modp_b64_gen gen.exe gen.exe.manifest modp_b64_gen.exe modp_b64_gen.exe.manifest
-      - name: Make portable zip
-        working-directory: aseprite/build/bin
-        run: echo '# This file is here so Aseprite behaves as a portable program' > aseprite.ini
-      - name: Create release
-        working-directory: aseprite/build/bin
-        run: 7z -tzip a Aseprite-${{ needs.check-version.outputs.latest_tag }}-${{ runner.os }}.zip *
-      - name: Upload release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
