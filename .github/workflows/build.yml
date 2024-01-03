@@ -26,9 +26,9 @@ jobs:
       id: version_info
       run: |
         data=$(curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest)
-        LATEST_TAG=$(echo -E "${data}" | jq -r '.tag_name')
-        DOWNLOAD_URL=$(echo -E "${data}" | jq -r '.assets[].browser_download_url')
-        VERSION_INFO=$(echo -E "${data}" | jq -r '.body')
+        LATEST_TAG=$(printf "%s" "${data}" | jq -r '.tag_name')
+        DOWNLOAD_URL=$(printf "%s" "${data}" | jq -r '.assets[].browser_download_url')
+        VERSION_INFO=$(printf "%s" "${data}" | jq -r '.body')
 
         echo "${LATEST_TAG}" > ${LATEST_TAG}.txt
         echo "latest_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
