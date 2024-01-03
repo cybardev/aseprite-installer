@@ -28,16 +28,10 @@ jobs:
         data=$(curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest)
         LATEST_TAG=$(echo "${data}" | jq -r '.tag_name')
         DOWNLOAD_URL=$(echo "${data}" | jq -r '.assets[].browser_download_url')
-        VERSION_INFO=$(echo "${data}" | jq -r '.body')
 
         echo "${LATEST_TAG}" > ${LATEST_TAG}.txt
         echo "latest_tag=${LATEST_TAG}" >> "${GITHUB_OUTPUT}"
         echo "download_url=${DOWNLOAD_URL}" >> "${GITHUB_OUTPUT}"
-
-        delimiter="$(openssl rand -hex 8)"
-        echo "version_info<<${delimiter}"
-        echo ${VERSION_INFO} >> "${GITHUB_OUTPUT}"
-        echo "${delimiter}" >> "${GITHUB_OUTPUT}"
     - name: Load version from cache
       id: version_check
       uses: actions/cache@v2
@@ -58,7 +52,7 @@ jobs:
         tag_name: ${{ steps.version_info.outputs.latest_tag }}
         release_name: Release Aseprite ${{ steps.version_info.outputs.latest_tag }}
         body: |
-          ${{ steps.version_info.outputs.version_info }}
+          For more information, go to: https://github.com/aseprite/aseprite/releases/latest
         draft: true
         prerelease: false
 
