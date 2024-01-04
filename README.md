@@ -10,6 +10,8 @@ Run the following commands to install Aseprite
 curl -sS "https://aseprite.cybar.dev/install.sh" | bash -e
 ```
 
+**PS**: `sudo` is used to install dependencies. Nothing else in the script uses root privileges.
+
 ## Credits
 
 -   [Aseprite](https://github.com/aseprite/aseprite/)
