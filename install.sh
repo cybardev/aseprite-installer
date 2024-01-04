@@ -1,13 +1,15 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -e
 
 # set installation directories
+APP="$HOME/.local/share/applications"
+BIN="$HOME/.local/bin"
 LIB="$HOME/.local/lib"
 ASEPRITE_DIR="$LIB/aseprite"
 SKIA_DIR="$ASEPRITE_DIR/skia"
 
 # fail if installation directory is occupied
 if [ -d "$ASEPRITE_DIR" ]; then
-    echo -e "\e[1;31m[ERROR]\e[0m \"$ASEPRITE_DIR\" is not empty."
+    echo -e "\e[1;31m[ERROR]\e[0m \"$ASEPRITE_DIR\" already exists."
     echo -e "\e[1;33mPlease ensure there is no directory named \"aseprite\" in \"$LIB\" and try again.\e[0m"
     echo
     echo -e "\e[1;36m[HINT]\e[0m Run this to move the directory to a backup directory at the same location:"
@@ -22,7 +24,7 @@ sudo apt-get install -y g++ clang libc++-dev libc++abi-dev cmake ninja-build lib
 CURRENT_DIR="$(pwd)"
 
 # create and change to installation directory
-mkdir -p "$LIB"
+[ ! -d "$LIB" ] && mkdir -p "$LIB"
 cd "$LIB"
 
 # clone aseprite recursively (include submodules)
@@ -51,9 +53,30 @@ cmake \
     ..
 ninja aseprite
 
-# build complete message and further instructions
+# symlink the binary to a location on PATH for CLI access
+[ ! -d "$BIN" ] && mkdir -p "$BIN"
+ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
+
+# add entry to app menu for GUI access
+[ ! -d "$APP" ] && mkdir -p "$APP"
+printf "%s\n" > "$APP/aseprite.desktop" \
+    "[Desktop Entry]" \
+    "Type=Application" \
+    "Name=Aseprite" \
+    "GenericName=Sprite Editor" \
+    "Comment=Animated sprite editor & pixel art tool" \
+    "Icon=$ASEPRITE_DIR/build/bin/data/icons/ase.ico" \
+    "Categories=Graphics;2DGraphics;RasterGraphics" \
+    "Exec=$ASEPRITE_DIR/build/bin/aseprite %U" \
+    "TryExec=$ASEPRITE_DIR/build/bin/aseprite" \
+    "Terminal=false" \
+    "StartupNotify=false" \
+    "StartupWMClass=Aseprite" \
+    "MimeType=image/bmp;image/gif;image/jpeg;image/png;image/x-pcx;image/x-tga;image/vnd.microsoft.icon;video/x-flic;image/webp;image/x-aseprite;"
+
+# installation complete message
 echo
-echo -e "\e[1;32m[DONE]\e[1;33m Please add \"$ASEPRITE_DIR/build/bin/\" to PATH\e[0m"
+echo -e "\e[1;32m[DONE]\e[1;33m Aseprite is now installed. Enjoy~ :3\e[0m"
 
 # go back to saved working directory
 cd "$CURRENT_DIR"
