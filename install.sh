@@ -8,7 +8,7 @@ ASEPRITE_DIR="$LIB/aseprite"
 SKIA_DIR="$LIB/skia"
 
 # install dependencies
-echo "\e[1;36m[INFO]\e[0m Installing dependencies..."
+echo -e "\e[1;36m[INFO]\e[0m Installing dependencies..."
 sudo apt-get install -y g++ clang libc++-dev libc++abi-dev cmake ninja-build libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev unzip
 
 # save current working directory
@@ -20,7 +20,7 @@ cd "$LIB"
 
 # download and unzip skia prebuilt for aseprite
 if [ ! -d "$SKIA_DIR" ]; then
-    echo "\e[1;36m[INFO]\e[0m Downloading Skia for Aseprite..."
+    echo -e "\e[1;36m[INFO]\e[0m Downloading Skia for Aseprite..."
     curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-Linux-Release-x64-libc++.zip"}')
     unzip -q "Skia-Linux-Release-x64-libc++.zip" -d "skia"
     rm "Skia-Linux-Release-x64-libc++.zip"
@@ -30,7 +30,7 @@ fi
 if [ -d "$ASEPRITE_DIR" ]; then
     cd aseprite
     if git rev-parse --git-dir > /dev/null 2>&1; then
-        echo "\e[1;36m[INFO]\e[0m Updating Aseprite source files..."
+        echo -e "\e[1;36m[INFO]\e[0m Updating Aseprite source files..."
         git pull
         git submodule update --init --recursive
     else
@@ -39,13 +39,13 @@ if [ -d "$ASEPRITE_DIR" ]; then
         exit 1
     fi
 else
-    echo "\e[1;36m[INFO]\e[0m Downloading Aseprite source files..."
+    echo -e "\e[1;36m[INFO]\e[0m Downloading Aseprite source files..."
     git clone --recursive https://github.com/aseprite/aseprite.git
     cd aseprite
 fi
 
 # main build process
-echo "\e[1;36m[INFO]\e[0m Starting build process..."
+echo -e "\e[1;36m[INFO]\e[0m Starting build process..."
 [ -d build ] && rm -rf build/* || mkdir build
 cd build
 export CC=clang
@@ -62,7 +62,7 @@ cmake \
     ..
 ninja aseprite
 
-echo "\e[1;36m[INFO]\e[0m Integrating Aseprite with the system..."
+echo -e "\e[1;36m[INFO]\e[0m Integrating Aseprite with the system..."
 
 # symlink the binary to a location on PATH for CLI access
 [ -d "$BIN" ] && rm -f "$BIN/aseprite" || mkdir -p "$BIN"
