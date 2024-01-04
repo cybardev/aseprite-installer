@@ -65,13 +65,11 @@ ninja aseprite
 echo "\e[1;36m[INFO]\e[0m Integrating Aseprite with the system..."
 
 # symlink the binary to a location on PATH for CLI access
-[ ! -d "$BIN" ] && mkdir -p "$BIN"
-rm -f "$BIN/aseprite"
+[ -d "$BIN" ] && rm -f "$BIN/aseprite" || mkdir -p "$BIN"
 ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
 
 # add entry to app menu for GUI access
-[ ! -d "$APP" ] && mkdir -p "$APP"
-rm -f "$APP/aseprite.desktop"
+[ -d "$APP" ] && rm -f "$APP/aseprite.desktop" || mkdir -p "$APP"
 printf "%s\n" > "$APP/aseprite.desktop" \
     "[Desktop Entry]" \
     "Type=Application" \
