@@ -66,7 +66,8 @@ echo "\e[1;36m[INFO]\e[0m Integrating Aseprite with the system..."
 
 # symlink the binary to a location on PATH for CLI access
 [ ! -d "$BIN" ] && mkdir -p "$BIN"
-[ ! -L "$BIN/aseprite" ] && ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
+rm -f "$BIN/aseprite"
+ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
 
 # add entry to app menu for GUI access
 [ ! -d "$APP" ] && mkdir -p "$APP"
