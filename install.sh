@@ -7,16 +7,6 @@ LIB="$HOME/.local/lib"
 ASEPRITE_DIR="$LIB/aseprite"
 SKIA_DIR="$ASEPRITE_DIR/skia"
 
-# fail if installation directory is occupied
-if [ -d "$ASEPRITE_DIR" ]; then
-    echo -e "\e[1;31m[ERROR]\e[0m \"$ASEPRITE_DIR\" already exists."
-    echo -e "\e[1;33mPlease ensure there is no directory named \"aseprite\" in \"$LIB\" and try again.\e[0m"
-    echo
-    echo -e "\e[1;36m[HINT]\e[0m Run this to move the directory to a backup directory at the same location:"
-    echo -e "\e[1;36m       mv $ASEPRITE_DIR $ASEPRITE_DIR.bak\e[0m"
-    exit 1
-fi
-
 # install dependencies
 echo "\e[1;36m[INFO]\e[0m Installing dependencies..."
 sudo apt-get install -y g++ clang libc++-dev libc++abi-dev cmake ninja-build libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev unzip
@@ -29,9 +19,22 @@ CURRENT_DIR="$(pwd)"
 cd "$LIB"
 
 # clone aseprite recursively (include submodules)
-echo "\e[1;36m[INFO]\e[0m Downloading Aseprite source files..."
-git clone --recursive https://github.com/aseprite/aseprite.git
-cd aseprite
+if [ -d "$ASEPRITE_DIR" ]; then
+    cd aseprite
+    if git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "\e[1;36m[INFO]\e[0m Updating Aseprite source files..."
+        git pull
+        git submodule update --init --recursive
+    else
+        echo -e "\e[1;31m[ERROR]\e[0m $ASEPRITE_DIR is not a git repository. Move the directory elsewhere and re-run this script to install Aseprite properly."
+        cd "$CURRENT_DIR"
+        exit 1
+    fi
+else
+    echo "\e[1;36m[INFO]\e[0m Downloading Aseprite source files..."
+    git clone --recursive https://github.com/aseprite/aseprite.git
+    cd aseprite
+fi
 
 # download and unzip skia prebuilt for aseprite
 echo "\e[1;36m[INFO]\e[0m Downloading Skia for Aseprite..."
@@ -61,11 +64,11 @@ echo "\e[1;36m[INFO]\e[0m Integrating Aseprite with the system..."
 
 # symlink the binary to a location on PATH for CLI access
 [ ! -d "$BIN" ] && mkdir -p "$BIN"
-ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
+[ ! -L "$BIN/aseprite" ] && ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
 
 # add entry to app menu for GUI access
 [ ! -d "$APP" ] && mkdir -p "$APP"
-printf "%s\n" > "$APP/aseprite.desktop" \
+[ ! -f "$APP/aseprite.desktop" ] && printf "%s\n" > "$APP/aseprite.desktop" \
     "[Desktop Entry]" \
     "Type=Application" \
     "Name=Aseprite" \
