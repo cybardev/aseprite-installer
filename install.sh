@@ -20,7 +20,7 @@ cd "$LIB"
 
 # download and unzip skia prebuilt for aseprite
 if [ ! -d "$SKIA_DIR" ]; then
-    echo -e "\e[1;36m[INFO]\e[0m Downloading Skia for Aseprite..."
+    echo -e "\n\e[1;36m[INFO]\e[0m Downloading Skia for Aseprite...\n"
     curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-Linux-Release-x64-libc++.zip"}')
     unzip -q "Skia-Linux-Release-x64-libc++.zip" -d "skia"
     rm "Skia-Linux-Release-x64-libc++.zip"
@@ -30,22 +30,22 @@ fi
 if [ -d "$ASEPRITE_DIR" ]; then
     cd aseprite
     if git rev-parse --git-dir > /dev/null 2>&1; then
-        echo -e "\e[1;36m[INFO]\e[0m Updating Aseprite source files..."
+        echo -e "\n\e[1;36m[INFO]\e[0m Updating Aseprite source files...\n"
         git pull
         git submodule update --init --recursive
     else
-        echo -e "\e[1;31m[ERROR]\e[0m $ASEPRITE_DIR is not a git repository. Move the directory elsewhere and re-run this script to install Aseprite properly."
+        echo -e "\n\e[1;31m[ERROR]\e[0m $ASEPRITE_DIR is not a git repository. Move the directory elsewhere and re-run this script to install Aseprite properly."
         cd "$CURRENT_DIR"
         exit 1
     fi
 else
-    echo -e "\e[1;36m[INFO]\e[0m Downloading Aseprite source files..."
+    echo -e "\n\e[1;36m[INFO]\e[0m Downloading Aseprite source files...\n"
     git clone --recursive https://github.com/aseprite/aseprite.git
     cd aseprite
 fi
 
 # main build process
-echo -e "\e[1;36m[INFO]\e[0m Starting build process..."
+echo -e "\n\e[1;36m[INFO]\e[0m Starting build process...\n"
 [ -d build ] && rm -rf build/* || mkdir build
 cd build
 export CC=clang
@@ -62,7 +62,7 @@ cmake \
     ..
 ninja aseprite
 
-echo -e "\e[1;36m[INFO]\e[0m Integrating Aseprite with the system..."
+echo -e "\n\e[1;36m[INFO]\e[0m Integrating Aseprite with the system...\n"
 
 # symlink the binary to a location on PATH for CLI access
 [ -d "$BIN" ] && rm -f "$BIN/aseprite" || mkdir -p "$BIN"
@@ -86,7 +86,7 @@ printf "%s\n" > "$APP/aseprite.desktop" \
     "MimeType=image/bmp;image/gif;image/jpeg;image/png;image/x-pcx;image/x-tga;image/vnd.microsoft.icon;video/x-flic;image/webp;image/x-aseprite;"
 
 # installation complete message
-echo -e "\n\e[1;32m[DONE]\e[1;33m Aseprite is now installed. Enjoy~ :3\e[0m"
+echo -e "\e[1;32m[DONE]\e[1;33m Aseprite is now installed. Enjoy~ :3\e[0m"
 
 # go back to saved working directory
 cd "$CURRENT_DIR"
