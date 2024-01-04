@@ -46,7 +46,7 @@ fi
 
 # main build process
 echo "\e[1;36m[INFO]\e[0m Starting build process..."
-mkdir build
+[ -d build ] && rm -rf build/* || mkdir build
 cd build
 export CC=clang
 export CXX=clang++
