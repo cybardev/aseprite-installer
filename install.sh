@@ -5,7 +5,7 @@ APP="$HOME/.local/share/applications"
 BIN="$HOME/.local/bin"
 LIB="$HOME/.local/lib"
 ASEPRITE_DIR="$LIB/aseprite"
-SKIA_DIR="$ASEPRITE_DIR/skia"
+SKIA_DIR="$LIB/skia"
 
 # install dependencies
 echo "\e[1;36m[INFO]\e[0m Installing dependencies..."
@@ -17,6 +17,14 @@ CURRENT_DIR="$(pwd)"
 # create and change to installation directory
 [ ! -d "$LIB" ] && mkdir -p "$LIB"
 cd "$LIB"
+
+# download and unzip skia prebuilt for aseprite
+if [ ! -d "$SKIA_DIR" ]; then
+    echo "\e[1;36m[INFO]\e[0m Downloading Skia for Aseprite..."
+    curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-Linux-Release-x64-libc++.zip"}')
+    unzip -q "Skia-Linux-Release-x64-libc++.zip" -d "skia"
+    rm "Skia-Linux-Release-x64-libc++.zip"
+fi
 
 # clone aseprite recursively (include submodules)
 if [ -d "$ASEPRITE_DIR" ]; then
@@ -35,12 +43,6 @@ else
     git clone --recursive https://github.com/aseprite/aseprite.git
     cd aseprite
 fi
-
-# download and unzip skia prebuilt for aseprite
-echo "\e[1;36m[INFO]\e[0m Downloading Skia for Aseprite..."
-curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-Linux-Release-x64-libc++.zip"}')
-unzip -q "Skia-Linux-Release-x64-libc++.zip" -d "skia"
-rm "Skia-Linux-Release-x64-libc++.zip"
 
 # main build process
 echo "\e[1;36m[INFO]\e[0m Starting build process..."
