@@ -26,12 +26,6 @@ if [ ! -d "$SKIA_DIR" ]; then
     rm "Skia-Linux-Release-x64-libc++.zip"
 fi
 
-update_aseprite() {
-    echo -e "\n\e[1;36m[INFO]\e[0m Updating Aseprite source files...\n"
-    git pull
-    git submodule update --init --recursive
-}
-
 # clone aseprite recursively (include submodules)
 if [ -d "$ASEPRITE_DIR" ]; then
     cd aseprite
@@ -45,21 +39,22 @@ if [ -d "$ASEPRITE_DIR" ]; then
             echo -e "\n\e[1;36m[INFO]\e[0m Aseprite is already up-to-date. No action necessary."
             cd "$CURRENT_DIR"
             exit 0
-        elif [ $LOCAL = $BASE ]; then
-            update_aseprite
-        else
+        fi
+        if [ $LOCAL != $BASE ]; then
             echo -e "\n\e[1;33m[WARNING]\e[0m Repository has diverged from remote origin/main.\n"
             read -p "Reset to origin/main and continue? (y/n) " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 git reset --hard HEAD
-                update_aseprite
             else
                 echo -e "\n\e[1;36m[INFO]\e[0m Quitting..."
                 cd "$CURRENT_DIR"
                 exit 1
             fi
         fi
+        echo -e "\n\e[1;36m[INFO]\e[0m Updating Aseprite source files...\n"
+        git pull
+        git submodule update --init --recursive
     else
         echo -e "\n\e[1;31m[ERROR]\e[0m $ASEPRITE_DIR is not a git repository. Move the directory elsewhere and re-run this script to install Aseprite properly."
         cd "$CURRENT_DIR"
