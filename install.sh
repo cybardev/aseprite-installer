@@ -43,6 +43,7 @@ if [ -d "$ASEPRITE_DIR" ]; then
 
         if [ $LOCAL = $REMOTE ]; then
             echo -e "\n\e[1;36m[INFO]\e[0m Aseprite is already up-to-date. No action necessary."
+            cd "$CURRENT_DIR"
             exit 0
         elif [ $LOCAL = $BASE ]; then
             update_aseprite
