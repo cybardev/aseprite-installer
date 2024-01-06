@@ -7,10 +7,6 @@ LIB="$HOME/.local/lib"
 ASEPRITE_DIR="$LIB/aseprite"
 SKIA_DIR="$LIB/skia"
 
-# install dependencies
-echo -e "\e[1;36m[INFO]\e[0m Installing dependencies..."
-sudo apt-get install -y g++ clang libc++-dev libc++abi-dev cmake ninja-build libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev unzip
-
 # save current working directory
 CURRENT_DIR="$(pwd)"
 
