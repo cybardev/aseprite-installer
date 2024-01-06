@@ -4,7 +4,7 @@ Shell script to download and build Aseprite from source for Debian/Ubuntu and de
 
 ## Dependencies
 
-Install required packages using the following command:
+Install required packages using the following command before running the script:
 
 ```sh
 sudo apt-get install -y g++ clang libc++-dev libc++abi-dev cmake ninja-build libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev unzip
