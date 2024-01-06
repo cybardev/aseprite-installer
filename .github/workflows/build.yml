@@ -52,7 +52,7 @@ jobs:
         tag_name: ${{ steps.version_info.outputs.latest_tag }}
         release_name: Release Aseprite ${{ steps.version_info.outputs.latest_tag }}
         body: |
-          For more information, go to: https://github.com/aseprite/aseprite/releases/latest
+          For more information, go to: https://github.com/aseprite/aseprite/releases/tag/${{ steps.version_info.outputs.latest_tag }}
         draft: true
         prerelease: false
 
