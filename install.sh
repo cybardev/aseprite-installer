@@ -22,7 +22,7 @@ if [ ! -d "$SKIA_DIR" ]; then
     rm "Skia-Linux-Release-x64-libc++.zip"
 fi
 
-# clone aseprite recursively (include submodules)
+# clone aseprite repository (include submodules) or update it if it exists
 if [ -d "$ASEPRITE_DIR" ]; then
     cd aseprite
     if git rev-parse --git-dir > /dev/null 2>&1; then
