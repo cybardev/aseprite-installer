@@ -87,7 +87,7 @@ echo -e "\n\e[1;36m[INFO]\e[0m Integrating Aseprite with the system...\n"
 ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
 
 # add entry to app menu for GUI access
-[ -d "$APP" ] && rm -f "$APP/aseprite.desktop" || mkdir -p "$APP"
+[ ! -d "$APP" ] && mkdir -p "$APP"
 printf "%s\n" > "$APP/aseprite.desktop" \
     "[Desktop Entry]" \
     "Type=Application" \
