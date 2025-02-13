@@ -1,0 +1,124 @@
+<!-- Aseprite -->
+<!-- Copyright (C) 2018-2024  Igara Studio S.A. -->
+<!-- Copyright (C) 2001-2016  David Capello -->
+<gui>
+  <window id="keyboard_shortcuts" text="@keyboard_shortcuts.title" help="keyboard-shortcuts">
+    <vbox>
+      <splitter horizontal="true" expansive="true" noborders="true" childspacing="2"
+                by="pixel" position="80" id="section_splitter">
+        <vbox expansive="true">
+          <search id="search" magnet="true" />
+          <view expansive="true">
+            <listbox id="section" expansive="true">
+              <listitem text="@.section_menus" />
+              <listitem text="@.section_commands" />
+              <listitem text="@.section_tools" />
+              <listitem text="@.section_action_modifiers" />
+              <listitem text="@.section_mouse_wheel" />
+              <listitem text="@.section_drag_value" />
+            </listbox>
+          </view>
+          <separator horizontal="true" />
+          <button text="@keyboard_shortcuts.import" id="import_button" />
+          <button text="@keyboard_shortcuts.export" id="export_button" />
+          <button text="@keyboard_shortcuts.reset" id="reset_button" />
+        </vbox>
+        <vbox id="lists_placeholder" expansive="true">
+          <view id="search_view" expansive="true">
+            <listbox id="search_list" />
+          </view>
+          <view id="menus_view" expansive="true">
+            <listbox id="menus" />
+          </view>
+          <view id="commands_view" expansive="true">
+            <listbox id="commands" />
+          </view>
+          <view id="tools_view" expansive="true">
+            <listbox id="tools" />
+          </view>
+          <view id="actions_view" expansive="true">
+            <listbox id="actions" />
+          </view>
+          <vbox id="wheel_section" expansive="true">
+	    <hbox>
+              <buttonset columns="2" id="wheel_behavior">
+                <item text="@.default_wheel_behavior" />
+                <item text="@.custom_wheel_behavior" />
+              </buttonset>
+            </hbox>
+            <check text="@options.wheel_zoom" id="wheel_zoom"
+                   pref="editor.zoom_with_wheel" />
+            <check text="@options.slide_zoom" id="slide_zoom"
+                   pref="editor.zoom_with_slide" />
+            <check text="@.invert_brush_size_wheel" id="invert_brush_size_scroll"
+                   pref="editor.invert_brush_size_wheel" />
+            <view expansive="true">
+              <listbox id="wheel_actions" />
+            </view>
+          </vbox>
+          <vbox id="drag_section" expansive="true">
+            <view expansive="true">
+              <listbox id="drag_actions" />
+            </view>
+            <separator horizontal="true" />
+            <hbox>
+              <vbox>
+                <label text="@.drag_angle" />
+              </vbox>
+              <buttonset columns="3" id="drag_angle">
+                <item icon="canvas_nw"
+                      style="dir_item"
+                      tooltip="@.drag_angle_tooltip"
+                      tooltip_dir="bottom" />
+                <item icon="canvas_n"
+                      style="dir_item"
+                      tooltip="@.drag_angle_tooltip"
+                      tooltip_dir="bottom" />
+                <item icon="canvas_ne"
+                      style="dir_item"
+                      tooltip="@.drag_angle_tooltip"
+                      tooltip_dir="bottom" />
+                <item icon="canvas_w"
+                      style="dir_item"
+                      tooltip="@.drag_angle_tooltip"
+                      tooltip_dir="right" />
+                <item />
+                <item icon="canvas_e"
+                      style="dir_item"
+                      tooltip="@.drag_angle_tooltip"
+                      tooltip_dir="left" />
+                <item icon="canvas_sw"
+                      style="dir_item"
+                      tooltip="@.drag_angle_tooltip"
+                      tooltip_dir="top" />
+                <item icon="canvas_s"
+                      style="dir_item"
+                      tooltip="@.drag_angle_tooltip"
+                      tooltip_dir="top" />
+                <item icon="canvas_se"
+                      style="dir_item"
+                      tooltip="@.drag_angle_tooltip"
+                      tooltip_dir="top" />
+              </buttonset>
+              <vbox>
+                <label text="@.drag_distance" />
+              </vbox>
+              <vbox>
+                <slider min="1" max="100" id="drag_distance" cell_align="horizontal" width="128"
+                        tooltip="@.drag_distance_tooltip"
+                        tooltip_dir="bottom" />
+              </vbox>
+            </hbox>
+          </vbox>
+        </vbox>
+      </splitter>
+      <hbox>
+        <boxfiller />
+        <hbox homogeneous="true">
+          <button text="@keyboard_shortcuts.ok" closewindow="true" id="ok" magnet="true" minwidth="60" />
+          <button text="@keyboard_shortcuts.cancel" closewindow="true" />
+        </hbox>
+      </hbox>
+    </vbox>
+  </window>
+</gui>

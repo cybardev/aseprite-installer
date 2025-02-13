@@ -5,22 +5,27 @@ APP="$HOME/.local/share/applications"
 BIN="$HOME/.local/bin"
 LIB="$HOME/.local/lib"
 ASEPRITE_DIR="$LIB/aseprite"
-SKIA_DIR="$LIB/skia"
+ASEPRITE_BIN_DIR="$ASEPRITE_DIR/build/bin"
 
 # save current working directory
 CURRENT_DIR="$(pwd)"
 
-# create and change to installation directory
-[ ! -d "$LIB" ] && mkdir -p "$LIB"
-cd "$LIB"
-
-# download and unzip skia prebuilt for aseprite
-if [ ! -d "$SKIA_DIR" ]; then
-    echo -e "\n\e[1;36m[INFO]\e[0m Downloading Skia for Aseprite...\n"
-    curl -LO $(curl -s https://api.github.com/repos/aseprite/skia/releases/latest | grep "tag_name" | awk '{print "https://github.com/aseprite/skia/releases/download/" substr($2, 2, length($2)-3) "/Skia-Linux-Release-x64-libc++.zip"}')
-    unzip -q "Skia-Linux-Release-x64-libc++.zip" -d "skia"
-    rm "Skia-Linux-Release-x64-libc++.zip"
+# check platform (OS, arch)
+cpu=x64
+if [[ "$(uname)" == "Linux" ]]; then
+    is_linux=1
+elif [[ "$(uname)" =~ "Darwin" ]]; then
+    is_macos=1
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        cpu=arm64
+    fi
 fi
+
+# create and change to installation directory
+if [ ! -d "$LIB" ]; then
+    mkdir -p "$LIB"
+fi
+cd "$LIB"
 
 # clone aseprite repository (include submodules) or update it if it exists
 if [ -d "$ASEPRITE_DIR" ]; then
@@ -58,50 +63,47 @@ if [ -d "$ASEPRITE_DIR" ]; then
     fi
 else
     echo -e "\n\e[1;36m[INFO]\e[0m Downloading Aseprite source files...\n"
-    git clone --recursive https://github.com/aseprite/aseprite.git
+    git clone --recursive https://github.com/aseprite/aseprite.git aseprite
     cd aseprite
 fi
 
 # main build process
 echo -e "\n\e[1;36m[INFO]\e[0m Starting build process...\n"
-[ -d build ] && rm -rf build/* || mkdir build
-cd build
-export CC=clang
-export CXX=clang++
-cmake \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_CXX_FLAGS:STRING=-stdlib=libc++ \
-    -DCMAKE_EXE_LINKER_FLAGS:STRING=-stdlib=libc++ \
-    -DLAF_BACKEND=skia \
-    -DSKIA_DIR=$SKIA_DIR \
-    -DSKIA_LIBRARY_DIR=$SKIA_DIR/out/Release-x64 \
-    -DSKIA_LIBRARY=$SKIA_DIR/out/Release-x64/libskia.a \
-    -G Ninja \
-    ..
-ninja aseprite
+bash build.sh --auto --norun
 
 echo -e "\n\e[1;36m[INFO]\e[0m Integrating Aseprite with the system...\n"
 
 # symlink the binary to a location on PATH for CLI access
-[ -d "$BIN" ] && rm -f "$BIN/aseprite" || mkdir -p "$BIN"
-ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
+if [ -d "$BIN" ]; then
+    rm -f "$BIN/aseprite"
+else
+    mkdir -p "$BIN"
+fi
+ln -s "$ASEPRITE_BIN_DIR/aseprite" "$BIN/aseprite"
 
 # add entry to app menu for GUI access
-[ ! -d "$APP" ] && mkdir -p "$APP"
-printf "%s\n" > "$APP/aseprite.desktop" \
-    "[Desktop Entry]" \
-    "Type=Application" \
-    "Name=Aseprite" \
-    "GenericName=Sprite Editor" \
-    "Comment=Animated sprite editor & pixel art tool" \
-    "Icon=$ASEPRITE_DIR/build/bin/data/icons/ase.ico" \
-    "Categories=Graphics;2DGraphics;RasterGraphics" \
-    "Exec=$ASEPRITE_DIR/build/bin/aseprite %U" \
-    "TryExec=$ASEPRITE_DIR/build/bin/aseprite" \
-    "Terminal=false" \
-    "StartupNotify=false" \
-    "StartupWMClass=Aseprite" \
-    "MimeType=image/bmp;image/gif;image/jpeg;image/png;image/x-pcx;image/x-tga;image/vnd.microsoft.icon;video/x-flic;image/webp;image/x-aseprite;"
+if [ $is_linux ]; then
+    [ ! -d "$APP" ] && mkdir -p "$APP"
+    printf "%s\n" > "$APP/aseprite.desktop" \
+        "[Desktop Entry]" \
+        "Type=Application" \
+        "Name=Aseprite" \
+        "GenericName=Sprite Editor" \
+        "Comment=Animated sprite editor & pixel art tool" \
+        "Icon=$ASEPRITE_BIN_DIR/data/icons/ase.ico" \
+        "Categories=Graphics;2DGraphics;RasterGraphics" \
+        "Exec=$ASEPRITE_BIN_DIR/aseprite %U" \
+        "TryExec=$ASEPRITE_BIN_DIR/aseprite" \
+        "Terminal=false" \
+        "StartupNotify=false" \
+        "StartupWMClass=Aseprite" \
+        "MimeType=image/bmp;image/gif;image/jpeg;image/png;image/x-pcx;image/x-tga;image/vnd.microsoft.icon;video/x-flic;image/webp;image/x-aseprite;"
+elif [ $is_macos ]; then
+    curl -O "https://aseprite.cybar.dev/Aseprite.app"
+    cp -fR "$ASEPRITE_BIN_DIR/aseprite" "Aseprite.app/Contents/MacOS/"
+    cp -fR "$ASEPRITE_BIN_DIR/data" "Aseprite.app/Contents/Resources/"
+    mv "Aseprite.app" "/Applications/"
+fi
 
 # installation complete message
 echo -e "\e[1;32m[DONE]\e[1;33m Aseprite is now installed. Enjoy~ :3\e[0m"
