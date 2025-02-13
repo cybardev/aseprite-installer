@@ -5,14 +5,26 @@ APP="$HOME/.local/share/applications"
 BIN="$HOME/.local/bin"
 LIB="$HOME/.local/lib"
 ASEPRITE_DIR="$LIB/aseprite"
+ASEPRITE_BIN_DIR="$ASEPRITE_DIR/build/bin"
 
 # save current working directory
 CURRENT_DIR="$(pwd)"
 
-# TODO: check platform (OS, arch)
+# check platform (OS, arch)
+cpu=x64
+if [[ "$(uname)" == "Linux" ]]; then
+    is_linux=1
+elif [[ "$(uname)" =~ "Darwin" ]]; then
+    is_macos=1
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        cpu=arm64
+    fi
+fi
 
 # create and change to installation directory
-[ ! -d "$LIB" ] && mkdir -p "$LIB"
+if [ ! -d "$LIB" ]; then
+    mkdir -p "$LIB"
+fi
 cd "$LIB"
 
 # clone aseprite repository (include submodules) or update it if it exists
@@ -62,26 +74,36 @@ bash build.sh --auto --norun
 echo -e "\n\e[1;36m[INFO]\e[0m Integrating Aseprite with the system...\n"
 
 # symlink the binary to a location on PATH for CLI access
-[ -d "$BIN" ] && rm -f "$BIN/aseprite" || mkdir -p "$BIN"
-ln -s "$ASEPRITE_DIR/build/bin/aseprite" "$BIN/aseprite"
+if [ -d "$BIN" ]; then
+    rm -f "$BIN/aseprite"
+else
+    mkdir -p "$BIN"
+fi
+ln -s "$ASEPRITE_BIN_DIR/aseprite" "$BIN/aseprite"
 
-# TODO: base it on platform
 # add entry to app menu for GUI access
-[ ! -d "$APP" ] && mkdir -p "$APP"
-printf "%s\n" > "$APP/aseprite.desktop" \
-    "[Desktop Entry]" \
-    "Type=Application" \
-    "Name=Aseprite" \
-    "GenericName=Sprite Editor" \
-    "Comment=Animated sprite editor & pixel art tool" \
-    "Icon=$ASEPRITE_DIR/build/bin/data/icons/ase.ico" \
-    "Categories=Graphics;2DGraphics;RasterGraphics" \
-    "Exec=$ASEPRITE_DIR/build/bin/aseprite %U" \
-    "TryExec=$ASEPRITE_DIR/build/bin/aseprite" \
-    "Terminal=false" \
-    "StartupNotify=false" \
-    "StartupWMClass=Aseprite" \
-    "MimeType=image/bmp;image/gif;image/jpeg;image/png;image/x-pcx;image/x-tga;image/vnd.microsoft.icon;video/x-flic;image/webp;image/x-aseprite;"
+if [ $is_linux ]; then
+    [ ! -d "$APP" ] && mkdir -p "$APP"
+    printf "%s\n" > "$APP/aseprite.desktop" \
+        "[Desktop Entry]" \
+        "Type=Application" \
+        "Name=Aseprite" \
+        "GenericName=Sprite Editor" \
+        "Comment=Animated sprite editor & pixel art tool" \
+        "Icon=$ASEPRITE_BIN_DIR/data/icons/ase.ico" \
+        "Categories=Graphics;2DGraphics;RasterGraphics" \
+        "Exec=$ASEPRITE_BIN_DIR/aseprite %U" \
+        "TryExec=$ASEPRITE_BIN_DIR/aseprite" \
+        "Terminal=false" \
+        "StartupNotify=false" \
+        "StartupWMClass=Aseprite" \
+        "MimeType=image/bmp;image/gif;image/jpeg;image/png;image/x-pcx;image/x-tga;image/vnd.microsoft.icon;video/x-flic;image/webp;image/x-aseprite;"
+elif [ $is_macos ]; then
+    curl -O "https://aseprite.cybar.dev/Aseprite.app"
+    cp -fR "$ASEPRITE_BIN_DIR/aseprite" "Aseprite.app/Contents/MacOS/"
+    cp -fR "$ASEPRITE_BIN_DIR/data" "Aseprite.app/Contents/Resources/"
+    mv "Aseprite.app" "/Applications/"
+fi
 
 # installation complete message
 echo -e "\e[1;32m[DONE]\e[1;33m Aseprite is now installed. Enjoy~ :3\e[0m"
