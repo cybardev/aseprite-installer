@@ -83,7 +83,9 @@ ln -s "$ASEPRITE_BIN_DIR/aseprite" "$BIN/aseprite"
 
 # add entry to app menu for GUI access
 if [ $is_linux ]; then
-    [ ! -d "$APP" ] && mkdir -p "$APP"
+    if [ ! -d "$APP" ]; then
+        mkdir -p "$APP"
+    fi
     printf "%s\n" > "$APP/aseprite.desktop" \
         "[Desktop Entry]" \
         "Type=Application" \
