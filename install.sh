@@ -99,10 +99,12 @@ if [ $is_linux ]; then
         "StartupWMClass=Aseprite" \
         "MimeType=image/bmp;image/gif;image/jpeg;image/png;image/x-pcx;image/x-tga;image/vnd.microsoft.icon;video/x-flic;image/webp;image/x-aseprite;"
 elif [ $is_macos ]; then
-    curl -O "https://aseprite.cybar.dev/Aseprite.app"
+    curl -O "https://aseprite.cybar.dev/Aseprite.zip"
+    unzip "Aseprite.zip"
     cp -fR "$ASEPRITE_BIN_DIR/aseprite" "Aseprite.app/Contents/MacOS/"
     cp -fR "$ASEPRITE_BIN_DIR/data" "Aseprite.app/Contents/Resources/"
-    mv "Aseprite.app" "/Applications/"
+    mv -f "Aseprite.app" "/Applications/"
+    rm -fr "Aseprite.zip"
 fi
 
 # installation complete message
