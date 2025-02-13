@@ -1,0 +1,28 @@
+<!-- Aseprite -->
+<!-- Copyright (C) 2021 by Igara Studio S.A. -->
+<!-- Copyright (C) 2016 by David Capello -->
+<gui>
+<window id="open_sequence" text="@.title">
+  <vbox>
+    <label text="@.description" />
+    <view expansive="true" id="view" minwidth="128" minheight="64">
+      <listbox id="files" multiselect="true" />
+    </view>
+    <hbox>
+      <label text="@.duration" />
+      <expr text="0" id="duration" suffix="ms" />
+    </hbox>
+    <separator horizontal="true" />
+    <check id="repeat" text="@.repeat" />
+    <check id="dont_show" text="@general.dont_show" />
+    <hbox>
+      <boxfiller />
+      <hbox homogeneous="true">
+        <button id="agree" text="@.agree" closewindow="true" minwidth="60" />
+        <button id="skip" text="@.skip" closewindow="true" minwidth="60" magnet="true" />
+      </hbox>
+      <boxfiller />
+    </hbox>
+  </vbox>
+</window>
+</gui>
