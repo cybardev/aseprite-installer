@@ -10,15 +10,11 @@ ASEPRITE_BIN_DIR="$ASEPRITE_DIR/build/bin"
 # save current working directory
 CURRENT_DIR="$(pwd)"
 
-# check platform (OS, arch)
-cpu=x64
-if [[ "$(uname)" == "Linux" ]]; then
+# check OS
+if [[ "$(uname)" =~ "Linux" ]]; then
     is_linux=1
 elif [[ "$(uname)" =~ "Darwin" ]]; then
     is_macos=1
-    if [[ "$(uname -m)" == "arm64" ]]; then
-        cpu=arm64
-    fi
 fi
 
 # create and change to installation directory
